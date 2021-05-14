@@ -30,10 +30,11 @@ func main() {
 	)
 	// 同时输出到终端和日志文件
 	multiWriter := io.MultiWriter(os.Stdout, rotateWriter)
+	// 日志中打印文件信息
 	//logrus.SetReportCaller(true)
 	logrus.SetOutput(multiWriter)
 	/*
-		Http Server and
+		Http Server and handler
 	*/
 	server := &http.Server{Addr: port, Handler: http.DefaultServeMux}
 	http.HandleFunc("/pullserver", func(resp http.ResponseWriter, req *http.Request) {
@@ -42,6 +43,7 @@ func main() {
 			resp.Write([]byte("Not supported method except POST"))
 			return
 		}
+		//  处理request信息，执行业务
 		util.HandleBody(resp, req)
 	})
 	err := server.ListenAndServe()

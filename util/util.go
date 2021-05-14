@@ -8,19 +8,11 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
-	"sync"
 	"time"
 
 	"github.com/pelletier/go-toml"
 	"github.com/sirupsen/logrus"
 )
-
-//client post body strucct
-type SrcServer struct {
-	Taskid int64
-	Body   ReqBody
-	Mu     *sync.Mutex
-}
 
 //ReqBody request body
 type ReqBody struct {
