@@ -81,7 +81,7 @@ func rsyncServer(resp http.ResponseWriter, project, module string, taskid int64)
 			fmt.Sprintf("%s@%s::%s", tomlTree.Get(fmt.Sprintf("%s.user", module)).(string), tomlTree.Get(fmt.Sprintf("%s.host", module)).(string), module),
 			fmt.Sprintf("%s", tomlTree.Get(fmt.Sprintf("%s.path", module)).(string)),
 		}
-		logrus.Infoln(args)
+		logrus.Infof("taskid:%d rsync options: %s", taskid, args)
 		// 执行rsync
 		cmd := exec.Command("rsync", args...)
 		var stdErr bytes.Buffer
