@@ -1,32 +1,15 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"time"
 
 	"github.com/dustingo/gameServerPublish/util"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 )
-
-// post或者get传递的body channel
-//var ch = make(chan map[string]string)
-
-// body信息的字典
-//var m = make(map[string]string, 2)
-
-// 存储每个请求的http.ResponseWriter channel
-//var ret = make(chan http.ResponseWriter)
-
-// 存储每个请求的taskid（时间戳）
-//var id = make(chan int64, 1)
 
 func main() {
 	// 获取配置文件信息
@@ -49,40 +32,26 @@ func main() {
 	multiWriter := io.MultiWriter(os.Stdout, rotateWriter)
 	//logrus.SetReportCaller(true)
 	logrus.SetOutput(multiWriter)
-	//定义接收到的请求的构体
-	var src util.SrcServer
 	/*
 		Http Server and
 	*/
 	server := &http.Server{Addr: port, Handler: http.DefaultServeMux}
 	http.HandleFunc("/pullserver", func(resp http.ResponseWriter, req *http.Request) {
-		//使用毫秒时间戳作为唯一taskid
-		//taskid := time.Now().UnixNano() / 1e6 //Format("20060102150405")
-		//id <- taskid
 		//不支持POST以外的方法
 		if req.Method != "POST" {
 			resp.Write([]byte("Not supported method except POST"))
 			return
 		}
-		body, _ := ioutil.ReadAll(req.Body)
-
-		srcBody := json.NewDecoder(req.Body)
-		srcBody.Decode(&src)
-		logrus.Infof("taskid->%d  remoteIP->%s  method->%s  requestURL->%s%s  project->%s  module->%s ", taskid, req.RemoteAddr, req.Method, req.Host, req.RequestURI, src.Project, src.Module)
-		defer req.Body.Close()
-		m["project"] = src.Project
-		m["module"] = src.Module
-		//ch <- m
-		//ret <- resp
+		util.HandleBody(resp, req)
 	})
-	go Start()
 	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}
 }
 
-// 实际执行任务逻辑
+/*
+实际执行任务逻辑
 func RsyncServer(m map[string]string, id chan int64) {
 	defer delete(m, "project")
 	defer delete(m, "module")
@@ -144,3 +113,5 @@ func (c ChanInfo) Start() {
 		}
 	}
 }
+
+*/
