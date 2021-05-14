@@ -1,0 +1,29 @@
+[global]
+
+port = ":8890"
+
+logdir = "/export/publish/"
+
+[mhxzx_dev]
+
+game = "mhxzx"
+
+user = "doumaoxin"
+
+host = "192.168.137.132"
+
+secrets = "/etc/rsyncd.scrt"
+
+path = "/home/mhxzx/beegoDemo"
+
+[zzbq_dev]
+
+game = "zzbq"
+
+user = "mhxzx"
+
+host = "192.168.137.128"
+
+secrets = "/etc/rsyncd_zzbq.scrt"
+
+path = "/home/mhxzx/zzbq_package"
