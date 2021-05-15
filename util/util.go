@@ -32,7 +32,9 @@ func ConfigTree() *toml.Tree {
 }
 
 // handle requets body
-func HandleBody(resp http.ResponseWriter, req *http.Request) {
+func HandleBody(resp http.ResponseWriter, req *http.Request, ch chan int) {
+	defer func() { <-ch }()
+	ch <- 1
 	var jsbody ReqBody
 	taskid := time.Now().UnixNano() / 1e6
 	b, _ := ioutil.ReadAll(req.Body)

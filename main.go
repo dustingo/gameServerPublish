@@ -1,15 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/dustingo/gameServerPublish/util"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 )
+
+var job = make(chan int, 1)
 
 func main() {
 	// 获取配置文件信息
@@ -33,6 +38,14 @@ func main() {
 	// 日志中打印文件信息
 	//logrus.SetReportCaller(true)
 	logrus.SetOutput(multiWriter)
+	exit := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	signal.Notify(exit, os.Interrupt, os.Kill, syscall.SIGUSR1, syscall.SIGUSR2, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sigs := <-exit
+		fmt.Println("receive signal: ", sigs)
+		done <- true
+	}()
 	/*
 		Http Server and handler
 	*/
@@ -40,14 +53,29 @@ func main() {
 	http.HandleFunc("/pullserver", func(resp http.ResponseWriter, req *http.Request) {
 		//不支持POST以外的方法
 		if req.Method != "POST" {
-			resp.Write([]byte("Not supported method except POST"))
+			resp.Write([]byte("Not support method except POST"))
 			return
 		}
 		//  处理request信息，执行业务
-		util.HandleBody(resp, req)
+		util.HandleBody(resp, req, job)
 	})
-	err := server.ListenAndServe()
-	if err != nil {
-		panic(err)
+	go func() {
+		err := server.ListenAndServe()
+		if err != nil {
+			panic(err)
+		}
+	}()
+	<-done
+	for {
+		fmt.Println("job: ", len(job))
+		if len(job) == 0 {
+			logrus.Infoln("http stopped")
+			break
+		} else {
+			fmt.Println("goroutine running,please wait")
+		}
+		time.Sleep(time.Second)
 	}
+	server.Close()
+
 }
