@@ -14,7 +14,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var job = make(chan int, 1)
+//限制同时同步100个服务器端
+var job = make(chan int, 100)
 
 func main() {
 	// 获取配置文件信息
