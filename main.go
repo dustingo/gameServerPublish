@@ -38,12 +38,14 @@ func main() {
 	// 日志中打印文件信息
 	//logrus.SetReportCaller(true)
 	logrus.SetOutput(multiWriter)
+	//信号
 	exit := make(chan os.Signal, 1)
+	//退出通知
 	done := make(chan bool, 1)
 	signal.Notify(exit, os.Interrupt, os.Kill, syscall.SIGUSR1, syscall.SIGUSR2, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		sigs := <-exit
-		fmt.Println("receive signal: ", sigs)
+		logrus.Infoln("received signal: ", sigs)
 		done <- true
 	}()
 	/*
@@ -72,7 +74,7 @@ func main() {
 			logrus.Infoln("http stopped")
 			break
 		} else {
-			fmt.Println("goroutine running,please wait")
+			fmt.Println("job is running,please wait...")
 		}
 		time.Sleep(time.Second)
 	}
