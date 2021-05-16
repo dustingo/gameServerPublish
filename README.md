@@ -4,7 +4,9 @@ gameServerPublish 是一款用Go原生http实现的,用于远程研发游戏服�
 #### Running
 git clone https://github.com/dustingo/gameServerPublish.git  
 go build or go run main.go
-
+systemctl start gameServerPublish  
+systemctl stop gameServerPublish  
+关闭http server时，会等待业务处理结束再结束。但是会遵循systemd的超时时间限制.
 #### Config
 config/server.toml
 - 为全局配置 \
@@ -34,3 +36,4 @@ Content-Type: application/json
 Body: {"project": "fshx","module":"fshx_dev" } #project为game名称,module 服务器端版本的rsync模块名称  
 e.g:  
 curl --request POST   --url http://localhost:8890/pullserver   --header 'content-type: application/json'    --data '{"project": "fshx","package":"fshx_dev" }'
+

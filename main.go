@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"io"
 	"net/http"
 	"os"
@@ -17,9 +17,17 @@ import (
 //限制同时同步100个服务器端
 var job = make(chan int, 100)
 
+//配置文件
+var filePath = flag.String("config", "", "server config path")
+
 func main() {
+	flag.Parse()
+	configFile := util.FileConfig{
+		File: *filePath,
+	}
 	// 获取配置文件信息
-	tomlTree := util.ConfigTree()
+	//tomlTree := util.ConfigTree()
+	tomlTree := configFile.ConfigTree()
 	if tomlTree == nil {
 		logrus.Errorln("配置失败")
 		return
@@ -43,7 +51,7 @@ func main() {
 	exit := make(chan os.Signal, 1)
 	//退出通知
 	done := make(chan bool, 1)
-	signal.Notify(exit, os.Interrupt, os.Kill, syscall.SIGUSR1, syscall.SIGUSR2, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(exit, os.Interrupt, os.Kill, syscall.SIGUSR1, syscall.SIGUSR2, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	go func() {
 		sigs := <-exit
 		logrus.Infoln("received signal: ", sigs)
@@ -60,7 +68,7 @@ func main() {
 			return
 		}
 		//  处理request信息，执行业务
-		util.HandleBody(resp, req, job)
+		util.HandleBody(resp, req, job, &configFile)
 	})
 	go func() {
 		err := server.ListenAndServe()
@@ -70,14 +78,13 @@ func main() {
 	}()
 	<-done
 	for {
-		fmt.Println("job: ", len(job))
 		if len(job) == 0 {
 			logrus.Infoln("http stopped")
 			break
 		} else {
-			fmt.Println("job is running,please wait...")
+			logrus.Printf("job running: %d,please wait...", len(job))
 		}
-		time.Sleep(time.Second)
+		time.Sleep(2 * time.Second)
 	}
 	server.Close()
 

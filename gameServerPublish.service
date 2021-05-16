@@ -1,0 +1,16 @@
+[Unit]
+Description=GameServer Rsync HTTP WEB Server
+#Wants=basic.target
+#After=basic.target network.target
+
+[Service]
+User=root
+ExecStart=/usr/local/gameServerPublish/gameServerPublish -config=/usr/local/gameServerPublish/config/server.toml
+ExecStop=/bin/kill -1 $MAINPID
+KillMode=mixed
+TimeoutStopSec=120
+#Restart=on-failure
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
