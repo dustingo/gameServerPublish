@@ -36,4 +36,5 @@ Content-Type: application/json
 Body: {"project": "fshx","module":"fshx_dev" } #project为game名称,module 服务器端版本的rsync模块名称  
 e.g:  
 curl --request POST   --url http://localhost:8890/pullserver   --header 'content-type: application/json'    --data '{"project": "fshx","package":"fshx_dev" }'
-
+#### to do
+为提高API的安全性，将会采取验证Token的方式来触发业务
