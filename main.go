@@ -71,14 +71,17 @@ func main() {
 		util.HandleBody(resp, req, job, &configFile)
 	})
 	go func() {
+		logrus.Infof("http server listening at %s", port)
 		err := server.ListenAndServe()
 		if err != nil {
+			logrus.Infoln(err.Error())
 			panic(err)
 		}
 	}()
 	<-done
 	for {
 		if len(job) == 0 {
+			server.Close()
 			logrus.Infoln("http stopped")
 			break
 		} else {
@@ -86,6 +89,6 @@ func main() {
 		}
 		time.Sleep(2 * time.Second)
 	}
-	server.Close()
+	//server.Close()
 
 }

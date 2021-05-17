@@ -93,5 +93,6 @@ func rsyncServer(resp http.ResponseWriter, project, module string, taskid int64,
 			return
 		}
 		resp.Write([]byte(fmt.Sprintf("taskid:%d pull game server ok", taskid)))
+		logrus.Infof("taskid: %d pull server ok", taskid)
 	}
 }
