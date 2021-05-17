@@ -18,7 +18,7 @@ import (
 var job = make(chan int, 100)
 
 //配置文件
-var filePath = flag.String("config", "", "server config path")
+var filePath = flag.String("config", "/usr/local/gameServerPublish/config/server.toml", "server config path")
 
 func main() {
 	flag.Parse()
