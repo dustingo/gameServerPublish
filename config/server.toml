@@ -16,14 +16,14 @@ secrets = "/etc/rsyncd.scrt"
 
 path = "/home/mhxzx/beegoDemo"
 
-[zzbq_dev]
+[game_redist]
 
 game = "zzbq"
 
-user = "mhxzx"
+user = "frostland"
 
-host = "192.168.137.128"
+host = "127.0.0.1"
 
-secrets = "/etc/rsyncd_zzbq.scrt"
+secrets = "/etc/rsyncd_client.secrets"
 
-path = "/home/mhxzx/zzbq_package"
+path = "/home/frostland/frostland_package"

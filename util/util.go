@@ -92,6 +92,14 @@ func rsyncServer(resp http.ResponseWriter, project, module string, taskid int64,
 			logrus.Errorf("taskid: %d eror:%s", taskid, stdErr.String())
 			return
 		}
+		chrownStr := fmt.Sprintf("chown -R %s:%s %s", tomlTree.Get(fmt.Sprintf("%s.user", module)).(string), tomlTree.Get(fmt.Sprintf("%s.user", module)).(string), tomlTree.Get(fmt.Sprintf("%s.path", module)).(string))
+		cmdChrown := exec.Command("sh", "-c", chrownStr)
+		err = cmdChrown.Run()
+		if err != nil {
+			resp.Write([]byte(fmt.Sprintf("taskid: %d rsync server error.error: %s", taskid, err.Error())))
+			logrus.Errorf("taskid: %d eror:%s", taskid, err.Error())
+			return
+		}
 		resp.Write([]byte(fmt.Sprintf("taskid:%d pull game server ok", taskid)))
 		logrus.Infof("taskid: %d pull server ok", taskid)
 	}
